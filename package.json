@@ -11,7 +11,10 @@
         "node": "0.4.x"
     },
     "dependencies": {
+        "connect": "1.4.5",
         "express": "2.3.x",
-        "socket.io": "0.6.x"
+        "ejs": "0.4.2",
+        "socket.io": "0.6.x",
+        "cradle": "0.5.x"
     }
 }
