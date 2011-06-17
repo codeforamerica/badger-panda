@@ -25,16 +25,20 @@
         </header>
         
         <div id="main" role="main">
-            <a class="vote-badger" href="/#vote-badger">Vote Badger</a>
-            <a class="vote-panda" href="/#vote-badger">Vote Panda</a>
+            <a class="vote-badger" href="#vote-badger">Vote Badger</a>
+            <a class="vote-panda" href="#vote-panda">Vote Panda</a>
         </div>
         
         <footer>
             Made at Code for America.
+            <div class="socket-status">waiting...</div>
         </footer>
+        <div style="display:none;visibility:hidden" id="ip"><%= ip %></div>
     </div>
     
     <script src="/js/libs/jquery-1.6.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/voter.js"></script>
+    <script src="/js/client.js"></script>
 </body>
 </html>
