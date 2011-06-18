@@ -58,7 +58,7 @@ a.vote-panda {
     border-radius: 6px;
 }
 
-.can-vote {
+.vote-status {
     color: #0010A4;
     display: block;
     margin: 10px auto;
@@ -66,4 +66,8 @@ a.vote-panda {
     background-color: #0067B0;
     width: 200px;
     border-radius: 6px;
+}
+
+.can-vote-left {
+    padding-left: 30px;
 }

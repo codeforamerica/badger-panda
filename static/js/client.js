@@ -20,17 +20,6 @@
         
         // Get counts
         voter.updateCounts(socket);
-        
-        // Handle badger vote
-        $('a.vote-badger').click(function() {
-            voter.submitVote(socket, 'badger');
-            return false;
-        }); 
-        
-        // Handle panda vote
-        $('a.vote-panda').click(function() {
-            voter.submitVote(socket, 'panda');
-            return false;
-        }); 
+        voter.handleClicks(socket);
     });
 })(jQuery);

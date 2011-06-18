@@ -29,7 +29,7 @@
             <a class="vote-panda" href="#vote-panda">Vote Panda</a>
             <div class="badgers">Badgers: <span class="badger-count"></span></div>
             <div class="pandas">Pandas: <span class="panda-count"></span></div>
-            <div class="can-vote"></div>
+            <div class="vote-status"><span class="can-vote"></span><span class="can-vote-left"></span></div>
         </div>
         
         <footer>
@@ -39,8 +39,10 @@
         <div style="display:none;visibility:hidden" id="ip"><%= ip %></div>
     </div>
     
-    <script src="/js/libs/jquery-1.6.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/libs/jquery-1.6.min.js"></script>
+    <script src="/js/libs/jquery-ui.min.js"></script>
+    <script src="/js/libs/jquery.timers.js"></script>
     <script src="/js/voter.js"></script>
     <script src="/js/client.js"></script>
 </body>
