@@ -8,17 +8,22 @@ var voter = {};
 // Scope jquery
 (function($) {
     voter = {
+        'canVote': true,
+    
         // Submit vote to system
         'submitVote': function(socket, vote) {
             var thisVoter = this;
-            var message = {
-                'action': 'save-vote',
-                'vote': vote,
-                'ip': thisVoter.getIP(),
-                'when': new Date()
+            if (this.canVote == true) {
+                thisVoter.stopVotes();
+                var message = {
+                    'action': 'save-vote',
+                    'vote': vote,
+                    'ip': thisVoter.getIP(),
+                    'when': new Date()
+                }
+                socket.send(message);
+                thisVoter.updateCounts(socket);
             }
-            socket.send(message);
-            thisVoter.updateCounts(socket);
         },
         
         // Get IP and store locally if found
@@ -42,6 +47,12 @@ var voter = {};
                 $('.badger-count').html(message.badgers);
                 $('.panda-count').html(message.pandas);
             }
+        },
+        
+        // Stop votes
+        'stopVotes': function() {
+            this.canVote = false;
+            $('.can-vote').html('Can\'t vote');
         }
     };
 })(jQuery);

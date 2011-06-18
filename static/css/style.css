@@ -22,6 +22,7 @@ h1 {
 #main {
     min-height: 300px;
     background-color: #151515;
+    padding: 20px;
 }
 
 footer {
@@ -43,6 +44,7 @@ a.vote-panda {
     padding: 10px 20px;
     background-color: #FFFA03;
     width: 200px;
+    border-radius: 6px;
 }
 
 .badgers,
@@ -53,4 +55,15 @@ a.vote-panda {
     padding: 10px 20px;
     background-color: #00FF04;
     width: 200px;
+    border-radius: 6px;
+}
+
+.can-vote {
+    color: #0010A4;
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #0067B0;
+    width: 200px;
+    border-radius: 6px;
 }
