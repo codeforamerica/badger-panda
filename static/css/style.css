@@ -7,4 +7,50 @@
  */
 body {
     background-color: #212121;
+    color: #FFFFFF;
+}
+
+header {
+    background-color: #222222;
+}
+
+h1 {
+    font-size: 3em;
+    margin: 10px 0;
+}
+
+#main {
+    min-height: 300px;
+    background-color: #151515;
+}
+
+footer {
+    height: 100px;
+    background-color: #212121;
+}
+
+a,
+a:visited,
+a:hover,
+a:visited:hover {
+    color: #FEB609;
+}
+
+a.vote-badger,
+a.vote-panda {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #FFFA03;
+    width: 200px;
+}
+
+.badgers,
+.pandas {
+    color: #007A00;
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #00FF04;
+    width: 200px;
 }

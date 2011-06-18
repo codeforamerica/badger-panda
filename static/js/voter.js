@@ -37,6 +37,8 @@ var voter = {};
         // Handle incoming messages
         'handleMessage': function(message) {
             if (typeof message.badgers != 'undefined') {
+                this.badgerCount = message.badgers;
+                this.pandaCount = message.pandas;
                 $('.badger-count').html(message.badgers);
                 $('.panda-count').html(message.pandas);
             }
