@@ -12,12 +12,13 @@ var voter = {};
         'submitVote': function(socket, vote) {
             var thisVoter = this;
             var message = {
+                'action': 'save-vote',
                 'vote': vote,
                 'ip': thisVoter.getIP(),
                 'when': new Date()
             }
-            console.log(message);
             socket.send(message);
+            thisVoter.updateCounts(socket);
         },
         
         // Get IP and store locally if found
@@ -26,6 +27,19 @@ var voter = {};
                 this.ip = $('#ip').html();
             }
             return this.ip
+        },
+        
+        // Get count
+        'updateCounts': function(socket) {
+            socket.send({ 'action': 'get-counts' });
+        },
+        
+        // Handle incoming messages
+        'handleMessage': function(message) {
+            if (typeof message.badgers != 'undefined') {
+                $('.badger-count').html(message.badgers);
+                $('.panda-count').html(message.pandas);
+            }
         }
     };
 })(jQuery);

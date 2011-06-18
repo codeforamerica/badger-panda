@@ -11,11 +11,15 @@
         }); 
         socket.on('message', function(message) {
             $('.socket-status').html('message');
+            voter.handleMessage(message);
         });
         socket.on('disconnect', function() {
             $('.socket-status').html('disconnected');
         });
         socket.connect();
+        
+        // Get counts
+        voter.updateCounts(socket);
         
         // Handle badger vote
         $('a.vote-badger').click(function() {
