@@ -33,6 +33,7 @@ footer {
     position: absolute;
     right: 20px;
     text-align: right;
+    position: fixed;
 }
 
 a,
