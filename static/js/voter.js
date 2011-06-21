@@ -15,7 +15,7 @@ var voter = {};
         'badgerColorHover': '#FFFFFF',
         'pandaColor': '#AAAAAA',
         'pandaColorHover': '#FFFFFF',
-        'voteTimer': 10,
+        'voteTimer': 20,
     
         'start': function(socket) {
             // Initial badger and panda
@@ -31,6 +31,9 @@ var voter = {};
             };
             this.badgerText = this.r.text(200, 240, 'BADGERS').attr(textAttr);
             this.pandaText = this.r.text(600, 240, 'PANDAS').attr(textAttr);
+            // Votes
+            this.badgerVotes = this.r.text(200, 250, '0').attr({ 'font-size': 1 });
+            this.pandaVotes = this.r.text(600, 250, '0').attr({ 'font-size': 1 });
             
             // Get started
             this.isLoading();
@@ -112,18 +115,19 @@ var voter = {};
 
             // Vote text
             var y = ((((this.pandaCount / total) * 150) + 50) / 4) + 240;
-            if (this.pandaVotes) { this.pandaVotes.remove(); }
-            this.pandaVotes = this.r.text(600, y, this.pandaCount)
-                .attr({
-                    'font-size': ((this.pandaCount / total) * 30) + 10
-                });
+            this.pandaVotes.attr({
+                'font-size': ((this.pandaCount / total) * 30) + 10,
+                'text': this.pandaCount.toString(),
+                'y': y
+            });
             y = ((((this.badgerCount / total) * 150) + 50) / 4) + 240;
-            if (this.badgerVotes) { this.badgerVotes.remove(); }
-            this.badgerVotes = this.r.text(200, y, this.badgerCount)
-                .attr({
-                    'font-size': ((this.badgerCount / total) * 30) + 10
-                });
+            this.badgerVotes.attr({
+                'font-size': ((this.badgerCount / total) * 30) + 10,
+                'text': this.badgerCount.toString(),
+                'y': y
+            });
             
+            // Mark as done loading
             this.doneLoading();
         },
         
@@ -131,19 +135,26 @@ var voter = {};
         'stopVotes': function() {
             var thisVoter = this;
             thisVoter.canVote = false;
-            $('.can-vote').html('Can\'t vote');
+            var overlay = this.r.rect(0, 0, 800, 640)
+                .attr({
+                    'fill': '#222222',
+                    'opacity': 0.95,
+                    'stroke-width': 0
+                });;
+            var text = this.r.text(400, 240, 'You can vote again in \n' + this.voteTimer + ' seconds.')
+                .attr({
+                    'fill': '#EEEEEE',
+                    'font-size': 50
+                });
     
             $('.can-vote-left').html('5 secs');
             $(document).everyTime(1000, function(i) {
-                $('.can-vote-left').html((5 - i) + ' secs');
-                if (i == 5) {
-                    $('.can-vote-left').html('');
-                }
-            }, 5);
+                text.attr('text', 'You can vote again in \n' + (thisVoter.voteTimer - i) + ' seconds.');
+            }, this.voteTimer);
             
-            $(document).oneTime(5000, function() {
-                $('.can-vote').html('Can vote!').parent().effect('highlight');
-                $('.can-vote-left').html('');
+            $(document).oneTime(this.voteTimer * 1000 + 100, function() {
+                text.remove();
+                overlay.remove();
                 thisVoter.canVote = true;
             });
         },
