@@ -15,6 +15,7 @@ var voter = {};
         'badgerColorHover': '#FFFFFF',
         'pandaColor': '#AAAAAA',
         'pandaColorHover': '#FFFFFF',
+        'voteTimer': 10,
     
         'start': function(socket) {
             // Initial badger and panda
@@ -59,7 +60,8 @@ var voter = {};
                     'when': new Date()
                 }
                 socket.send(message);
-                thisVoter.updateCounts(socket);
+                thisVoter.isLoading();
+                thisVoter.getCounts(socket);
             }
             return false;
         },
@@ -170,13 +172,11 @@ var voter = {};
             // Handle badger vote
             $(this.badger.node).click(function() {
                 thisVoter.submitVote(socket, 'badger');
-                return false;
             }); 
             
             // Handle panda vote
-            $('this.panda.node').click(function() {
+            $(this.panda.node).click(function() {
                 thisVoter.submitVote(socket, 'panda');
-                return false;
             }); 
         }
     };
