@@ -14,7 +14,8 @@ in any environment that runs node.js.
 
 1. Install node
 2. Install npm
-3. Run `npm install`
+3. Run: `npm install`
+4. Copy example settings and update appropriate values: cp lib/settings.example.js lib/settings.js`
 4. Run: `node lib/server.js`
 
 ## Technologies Used
