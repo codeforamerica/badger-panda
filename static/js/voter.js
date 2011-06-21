@@ -11,14 +11,18 @@ var voter = {};
         'canVote': true,
         'badgerCount': 0,
         'pandaCount': 0,
+        'badgerColor': '#AAAAAA',
+        'badgerColorHover': '#FFFFFF',
+        'pandaColor': '#AAAAAA',
+        'pandaColorHover': '#FFFFFF',
     
         'start': function(socket) {
             // Initial badger and panda
             this.r = Raphael('main', 800, 480);
             this.badger = this.r.circle(200, 240, 0);
-            this.badger.attr('fill', '#999999');
+            this.badger.attr('fill', this.badgerColor);
             this.panda = this.r.circle(600, 240, 0);
-            this.panda.attr('fill', '#FF0000');
+            this.panda.attr('fill', this.pandaColor);
             // Add text
             var textAttr = {
                 'font-size': 1,
@@ -106,11 +110,13 @@ var voter = {};
 
             // Vote text
             var y = ((((this.pandaCount / total) * 150) + 50) / 4) + 240;
+            if (this.pandaVotes) { this.pandaVotes.remove(); }
             this.pandaVotes = this.r.text(600, y, this.pandaCount)
                 .attr({
                     'font-size': ((this.pandaCount / total) * 30) + 10
                 });
             y = ((((this.badgerCount / total) * 150) + 50) / 4) + 240;
+            if (this.badgerVotes) { this.badgerVotes.remove(); }
             this.badgerVotes = this.r.text(200, y, this.badgerCount)
                 .attr({
                     'font-size': ((this.badgerCount / total) * 30) + 10
@@ -143,15 +149,32 @@ var voter = {};
         // Handle clicks
         'handleClicks': function(socket) {
             var thisVoter = this;
+            
+            // Handle hovers
+            $(this.badger.node).hover(function() {
+                $(this).css('cursor', 'pointer');
+                thisVoter.badger.attr('fill', thisVoter.badgerColorHover);
+            },
+            function() {
+                thisVoter.badger.attr('fill', thisVoter.badgerColor);
+            });
+            $(this.panda.node).hover(function() {
+                $(this).css('cursor', 'pointer');
+                thisVoter.panda.attr('fill', thisVoter.pandaColorHover);
+            },
+            function() {
+                thisVoter.panda.attr('fill', thisVoter.pandaColor);
+            });
+        
         
             // Handle badger vote
-            $('a.vote-badger').click(function() {
+            $(this.badger.node).click(function() {
                 thisVoter.submitVote(socket, 'badger');
                 return false;
             }); 
             
             // Handle panda vote
-            $('a.vote-panda').click(function() {
+            $('this.panda.node').click(function() {
                 thisVoter.submitVote(socket, 'panda');
                 return false;
             }); 
