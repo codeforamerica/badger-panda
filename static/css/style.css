@@ -5,29 +5,34 @@
 /**
  * Main styles for Badger Panda
  */
+* {
+    font-family: "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+}
+ 
 body {
-    background-color: #212121;
+    background-color: #151515;
     color: #FFFFFF;
 }
 
 header {
-    background-color: #222222;
 }
 
 h1 {
     font-size: 3em;
     margin: 10px 0;
+    display: none;
 }
 
 #main {
     min-height: 300px;
-    background-color: #151515;
     padding: 20px;
 }
 
 footer {
-    height: 100px;
-    background-color: #212121;
+    bottom: 10px;
+    position: absolute;
+    right: 20px;
+    text-align: right;
 }
 
 a,
