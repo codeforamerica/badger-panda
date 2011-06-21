@@ -18,12 +18,7 @@
         });
         socket.connect();
         
-        var r = Raphael('main', 640, 480);
-        var circle = r.circle(50, 40, 10);
-        circle.attr("fill", "#f00");
-        
-        // Get counts
-        voter.updateCounts(socket);
-        voter.handleClicks(socket);
+        // Get the voting going
+        voter.start(socket);
     });
 })(jQuery);

@@ -12,6 +12,37 @@ var voter = {};
         'badgerCount': 0,
         'pandaCount': 0,
     
+        'start': function(socket) {
+            // Initial badger and panda
+            this.r = Raphael('main', 800, 480);
+            this.badger = this.r.circle(200, 240, 0);
+            this.badger.attr('fill', '#999999');
+            this.panda = this.r.circle(600, 240, 0);
+            this.panda.attr('fill', '#FF0000');
+            // Add text
+            var textAttr = {
+                'font-size': 1,
+                'text-anchor': 'middle'
+            };
+            this.badgerText = this.r.text(200, 240, 'BADGERS').attr(textAttr);
+            this.pandaText = this.r.text(600, 240, 'PANDAS').attr(textAttr);
+            
+            // Get started
+            this.isLoading();
+            this.getCounts(socket);
+            this.handleClicks(socket);
+        },
+        
+        // Represent loading
+        'isLoading': function() {
+            $('#loading').show();
+        },
+        
+        // Handle not loading
+        'doneLoading': function() {
+            $('#loading').hide();
+        },
+    
         // Submit vote to system
         'submitVote': function(socket, vote) {
             var thisVoter = this;
@@ -38,7 +69,7 @@ var voter = {};
         },
         
         // Get count
-        'updateCounts': function(socket) {
+        'getCounts': function(socket) {
             socket.send({ 'action': 'get-counts' });
         },
         
@@ -50,10 +81,42 @@ var voter = {};
                 if (this.badgerCount != message.badgers || this.pandaCount != message.pandas) {
                     this.badgerCount = message.badgers;
                     this.pandaCount = message.pandas;
-                    $('.badger-count').html(message.badgers).parent().effect('highlight');
-                    $('.panda-count').html(message.pandas).parent().effect('highlight');
+                    this.updateCounts();
                 }
             }
+        },
+        
+        // Update counts visually
+        'updateCounts': function() {
+            var total = this.badgerCount + this.pandaCount;
+            this.panda.animate({
+                'r': ((this.pandaCount / total) * 150) + 50
+            }, 1000, 'elastic');
+            this.badger.animate({
+                'r': ((this.badgerCount / total) * 150) + 50
+            }, 1000, 'elastic');
+            
+            // Label text
+            this.pandaText.animate({
+                'font-size': ((this.pandaCount / total) * 20) + 5
+            }, 1000, 'elastic');
+            this.badgerText.animate({
+                'font-size': ((this.badgerCount / total) * 20) + 5
+            }, 1000, 'elastic');
+
+            // Vote text
+            var y = ((((this.pandaCount / total) * 150) + 50) / 4) + 240;
+            this.pandaVotes = this.r.text(600, y, this.pandaCount)
+                .attr({
+                    'font-size': ((this.pandaCount / total) * 30) + 10
+                });
+            y = ((((this.badgerCount / total) * 150) + 50) / 4) + 240;
+            this.badgerVotes = this.r.text(200, y, this.badgerCount)
+                .attr({
+                    'font-size': ((this.badgerCount / total) * 30) + 10
+                });
+            
+            this.doneLoading();
         },
         
         // Stop votes

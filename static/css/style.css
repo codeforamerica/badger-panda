@@ -24,8 +24,12 @@ h1 {
 }
 
 #main {
-    min-height: 300px;
-    padding: 20px;
+    height: 480px;
+    left: 50%;
+    margin: -240px 0 0 -400px;
+    position: absolute;
+    top: 50%;
+    width: 800px;
 }
 
 footer {
@@ -41,6 +45,13 @@ a:visited,
 a:hover,
 a:visited:hover {
     color: #FEB609;
+}
+
+#loading {
+    display: none;
+    top: 10px;
+    left: 20px;
+    position: fixed;
 }
 
 a.vote-badger,
