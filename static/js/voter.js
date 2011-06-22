@@ -170,6 +170,7 @@ var voter = {};
         'stopVotes': function() {
             var thisVoter = this;
             thisVoter.canVote = false;
+            
             var overlay = this.r.rect(0, 0, this.canvasX, this.canvasY)
                 .attr({
                     'fill': '#222222',
