@@ -11,19 +11,33 @@ var voter = {};
         'canVote': true,
         'badgerCount': 0,
         'pandaCount': 0,
-        'badgerColor': '#AAAAAA',
-        'badgerColorHover': '#FFFFFF',
-        'pandaColor': '#AAAAAA',
-        'pandaColorHover': '#FFFFFF',
         'voteTimer': 20,
+        'canvasX': 800,
+        'canvasY': 480,
+        'imageInitialDim': 20,
+        'imageMinDim': 150,
+        'imageScaleDim': 300,
     
         'start': function(socket) {
+            // Calculate some things
+            this.badgerX = this.canvasX * .25;
+            this.badgerY = this.canvasY * .5;
+            this.pandaX = this.canvasX * .75;
+            this.pandaY = this.canvasY * .5;
+            this.r = Raphael('main', this.canvasX, this.canvasY);
+            
             // Initial badger and panda
-            this.r = Raphael('main', 800, 480);
-            this.badger = this.r.circle(200, 240, 0);
-            this.badger.attr('fill', this.badgerColor);
-            this.panda = this.r.circle(600, 240, 0);
-            this.panda.attr('fill', this.pandaColor);
+            this.badger = this.r.image('/img/badger.svg', 
+                this.badgerX - (this.imageInitialDim / 2), 
+                this.badgerY - (this.imageInitialDim / 2), 
+                this.imageInitialDim, this.imageInitialDim
+            );
+            this.panda = this.r.image('/img/panda.svg',
+                this.pandaX - (this.imageInitialDim / 2), 
+                this.pandaY - (this.imageInitialDim / 2), 
+                this.imageInitialDim, this.imageInitialDim
+            );
+            
             // Add text
             var textAttr = {
                 'font-size': 1,
@@ -98,11 +112,22 @@ var voter = {};
         // Update counts visually
         'updateCounts': function() {
             var total = this.badgerCount + this.pandaCount;
+            
+            // Scale images
+            var pandaDim = ((this.pandaCount / total) * this.imageScaleDim) + this.imageMinDim;
             this.panda.animate({
-                'r': ((this.pandaCount / total) * 150) + 50
+                'width': pandaDim,
+                'height': pandaDim,
+                'x': this.pandaX - (pandaDim / 2),
+                'y': this.pandaY - (pandaDim / 2)
             }, 1000, 'elastic');
+            
+            var badgerDim = ((this.badgerCount / total) * this.imageScaleDim) + this.imageMinDim;
             this.badger.animate({
-                'r': ((this.badgerCount / total) * 150) + 50
+                'width': badgerDim,
+                'height': badgerDim,
+                'x': this.badgerX - (badgerDim / 2),
+                'y': this.badgerY - (badgerDim / 2)
             }, 1000, 'elastic');
             
             // Label text
