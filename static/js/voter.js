@@ -17,14 +17,20 @@ var voter = {};
         'imageInitialDim': 20,
         'imageMinDim': 150,
         'imageScaleDim': 300,
+        'countColor': '#CCCCCC',
     
         'start': function(socket) {
             // Calculate some things
+            this.canvasX = $(window).width();
+            this.canvasY = $(window).height();
             this.badgerX = this.canvasX * .25;
             this.badgerY = this.canvasY * .5;
             this.pandaX = this.canvasX * .75;
             this.pandaY = this.canvasY * .5;
-            this.r = Raphael('main', this.canvasX, this.canvasY);
+            this.imageScaleDim = this.canvasY * .7;
+            
+            // Create the canvas
+            this.r = Raphael(0, 0, this.canvasX, this.canvasY);
             
             // Initial badger and panda
             this.badger = this.r.image('/img/badger.svg', 
@@ -38,16 +44,17 @@ var voter = {};
                 this.imageInitialDim, this.imageInitialDim
             );
             
-            // Add text
-            var textAttr = {
-                'font-size': 1,
-                'text-anchor': 'middle'
-            };
-            this.badgerText = this.r.text(200, 240, 'BADGERS').attr(textAttr);
-            this.pandaText = this.r.text(600, 240, 'PANDAS').attr(textAttr);
             // Votes
-            this.badgerVotes = this.r.text(200, 250, '0').attr({ 'font-size': 1 });
-            this.pandaVotes = this.r.text(600, 250, '0').attr({ 'font-size': 1 });
+            this.badgerVotes = this.r.text(this.badgerX, 
+                this.badgerY + this.imageInitialDim + 20, '0').attr({
+                'font-size': 1,
+                'fill': this.countColor
+            });
+            this.pandaVotes = this.r.text(this.pandaX, 
+                this.pandaY + this.imageInitialDim + 20, '0').attr({
+                'font-size': 1,
+                'fill': this.countColor
+            });
             
             // Get started
             this.isLoading();
@@ -119,7 +126,8 @@ var voter = {};
                 'width': pandaDim,
                 'height': pandaDim,
                 'x': this.pandaX - (pandaDim / 2),
-                'y': this.pandaY - (pandaDim / 2)
+                'y': this.pandaY - (pandaDim / 2),
+                'rotation': '360'
             }, 1000, 'elastic');
             
             var badgerDim = ((this.badgerCount / total) * this.imageScaleDim) + this.imageMinDim;
@@ -127,29 +135,20 @@ var voter = {};
                 'width': badgerDim,
                 'height': badgerDim,
                 'x': this.badgerX - (badgerDim / 2),
-                'y': this.badgerY - (badgerDim / 2)
-            }, 1000, 'elastic');
-            
-            // Label text
-            this.pandaText.animate({
-                'font-size': ((this.pandaCount / total) * 20) + 5
-            }, 1000, 'elastic');
-            this.badgerText.animate({
-                'font-size': ((this.badgerCount / total) * 20) + 5
+                'y': this.badgerY - (badgerDim / 2),
+                'rotation': '360'
             }, 1000, 'elastic');
 
             // Vote text
-            var y = ((((this.pandaCount / total) * 150) + 50) / 4) + 240;
             this.pandaVotes.attr({
                 'font-size': ((this.pandaCount / total) * 30) + 10,
                 'text': this.pandaCount.toString(),
-                'y': y
+                'y': this.pandaY + (pandaDim / 2) + 30
             });
-            y = ((((this.badgerCount / total) * 150) + 50) / 4) + 240;
             this.badgerVotes.attr({
                 'font-size': ((this.badgerCount / total) * 30) + 10,
                 'text': this.badgerCount.toString(),
-                'y': y
+                'y': this.badgerY + (badgerDim / 2) + 30
             });
             
             // Mark as done loading
@@ -160,13 +159,14 @@ var voter = {};
         'stopVotes': function() {
             var thisVoter = this;
             thisVoter.canVote = false;
-            var overlay = this.r.rect(0, 0, 800, 640)
+            var overlay = this.r.rect(0, 0, this.canvasX, this.canvasY)
                 .attr({
                     'fill': '#222222',
                     'opacity': 0.95,
                     'stroke-width': 0
                 });;
-            var text = this.r.text(400, 240, 'You can vote again in \n' + this.voteTimer + ' seconds.')
+            var text = this.r.text(this.canvasX / 2, this.canvasY / 2, 
+                'You can vote again in \n' + this.voteTimer + ' seconds.')
                 .attr({
                     'fill': '#EEEEEE',
                     'font-size': 50
@@ -191,19 +191,12 @@ var voter = {};
             // Handle hovers
             $(this.badger.node).hover(function() {
                 $(this).css('cursor', 'pointer');
-                thisVoter.badger.attr('fill', thisVoter.badgerColorHover);
             },
-            function() {
-                thisVoter.badger.attr('fill', thisVoter.badgerColor);
-            });
+            function() { });
             $(this.panda.node).hover(function() {
                 $(this).css('cursor', 'pointer');
-                thisVoter.panda.attr('fill', thisVoter.pandaColorHover);
             },
-            function() {
-                thisVoter.panda.attr('fill', thisVoter.pandaColor);
-            });
-        
+            function() { });
         
             // Handle badger vote
             $(this.badger.node).click(function() {

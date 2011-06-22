@@ -24,12 +24,9 @@ h1 {
 }
 
 #main {
-    height: 480px;
-    left: 50%;
-    margin: -240px 0 0 -400px;
     position: absolute;
-    top: 50%;
-    width: 800px;
+    top: 0;
+    left: 0;
 }
 
 footer {
@@ -52,39 +49,4 @@ a:visited:hover {
     top: 10px;
     left: 20px;
     position: fixed;
-}
-
-a.vote-badger,
-a.vote-panda {
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    background-color: #FFFA03;
-    width: 200px;
-    border-radius: 6px;
-}
-
-.badgers,
-.pandas {
-    color: #007A00;
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    background-color: #00FF04;
-    width: 200px;
-    border-radius: 6px;
-}
-
-.vote-status {
-    color: #0010A4;
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    background-color: #0067B0;
-    width: 200px;
-    border-radius: 6px;
-}
-
-.can-vote-left {
-    padding-left: 30px;
 }
