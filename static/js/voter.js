@@ -56,6 +56,12 @@ var voter = {};
                 'fill': this.countColor
             });
             
+            // Vote circles
+            this.badgerVote = this.r.circle(this.badgerX, this.badgerY, 0)
+                .attr({
+                    'fill': '#CC7226'
+                }).toBack();
+            
             // Get started
             this.isLoading();
             this.getCounts(socket);
@@ -118,6 +124,7 @@ var voter = {};
         
         // Update counts visually
         'updateCounts': function() {
+            var thisVoter = this;
             var total = this.badgerCount + this.pandaCount;
             
             // Scale images
@@ -138,6 +145,10 @@ var voter = {};
                 'y': this.badgerY - (badgerDim / 2),
                 'rotation': '360'
             }, 1000, 'elastic');
+            this.badgerVote.toBack().animate({ 'r': this.canvasX }, 3000, function() {
+                thisVoter.badgerVote.animate({ 'r': 0 }, 1000);
+            });
+            this.panda.toBack();
 
             // Vote text
             this.pandaVotes.attr({
