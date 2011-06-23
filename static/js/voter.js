@@ -1,8 +1,9 @@
 /**
  * @file
  * Vote handler
+ *
+ * This code won't win a medal, but badgers will.
  */
-
 var voter = {};
 
 // Scope jquery
@@ -21,7 +22,10 @@ var voter = {};
         'colors': {
             'badger': ['#FCE138', '#FBDB34', '#FAD531', '#F9CF2E', '#F9C92B', '#F8C328', 
                 '#F7BD25', '#F6B722', '#F6B11F', '#F5AB1B', '#F4A518', '#F39F15', '#F39912', 
-                '#F2930F', '#F18D0C']
+                '#F2930F', '#F18D0C'],
+            'panda': ['#B3FC36', '#AEF732', '#AAF22F', '#A6ED2C', '#A2E929', '#9EE426', 
+                '#99DF22', '#95DA1F', '#91D61C', '#8DD119', '#89CC16', '#84C712', 
+                '#80C30F', '#7CBE0C', '#78B909', '#74B406', '#70B003']
             },
     
         'start': function(socket) {
@@ -32,7 +36,7 @@ var voter = {};
             this.badgerY = this.canvasY * .5;
             this.pandaX = this.canvasX * .75;
             this.pandaY = this.canvasY * .5;
-            this.imageScaleDim = this.canvasY * .7;
+            this.imageScaleDim = this.canvasY * .6;
             // Create the canvas
             this.r = Raphael(0, 0, this.canvasX, this.canvasY);
             
@@ -62,6 +66,8 @@ var voter = {};
             
             // Vote circles
             this.badgerVote = this.drawExplosion('badger', this.badgerX, this.badgerY, 1)
+                .toBack();
+            this.pandaVote = this.drawExplosion('panda', this.pandaX, this.pandaY, 1)
                 .toBack();
             
             // Get started
@@ -132,6 +138,7 @@ console.log(message);
         
         // Update counts visually
         'updateCounts': function(votedBadger, votedPanda) {
+            var scaler = 2000;
             var thisVoter = this;
             var total = this.badgerCount + this.pandaCount;
             
@@ -156,7 +163,6 @@ console.log(message);
             
             // If badger pressed, explode!
             if (votedBadger) {
-                var scaler = 2000;
                 this.badgerVote.toFront();
                 this.badger.toFront();
                 this.badgerVote.animate({
@@ -165,6 +171,20 @@ console.log(message);
                     function() {
                         thisVoter.badgerVote.animate({
                         'scale': [1, 1, thisVoter.badgerX, thisVoter.badgerY]
+                        }, 2000);
+                    });
+            }
+            
+            // If panda pressed, explode!
+            if (votedPanda) {
+                this.pandaVote.toFront();
+                this.panda.toFront();
+                this.pandaVote.animate({
+                    'scale': [scaler, scaler, thisVoter.pandaX, thisVoter.pandaY]
+                    }, 2000, 
+                    function() {
+                        thisVoter.pandaVote.animate({
+                        'scale': [1, 1, thisVoter.pandaX, thisVoter.pandaY]
                         }, 2000);
                     });
             }
