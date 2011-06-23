@@ -18,6 +18,11 @@ var voter = {};
         'imageMinDim': 150,
         'imageScaleDim': 300,
         'countColor': '#CCCCCC',
+        'colors': {
+            'badger': ['#FCE138', '#FBDB34', '#FAD531', '#F9CF2E', '#F9C92B', '#F8C328', 
+                '#F7BD25', '#F6B722', '#F6B11F', '#F5AB1B', '#F4A518', '#F39F15', '#F39912', 
+                '#F2930F', '#F18D0C']
+            },
     
         'start': function(socket) {
             // Calculate some things
@@ -28,7 +33,6 @@ var voter = {};
             this.pandaX = this.canvasX * .75;
             this.pandaY = this.canvasY * .5;
             this.imageScaleDim = this.canvasY * .7;
-            
             // Create the canvas
             this.r = Raphael(0, 0, this.canvasX, this.canvasY);
             
@@ -57,10 +61,8 @@ var voter = {};
             });
             
             // Vote circles
-            this.badgerVote = this.r.circle(this.badgerX, this.badgerY, 0)
-                .attr({
-                    'fill': '#CC7226'
-                }).toBack();
+            this.badgerVote = this.drawExplosion('badger', this.badgerX, this.badgerY, 1)
+                .toBack();
             
             // Get started
             this.isLoading();
@@ -154,11 +156,17 @@ console.log(message);
             
             // If badger pressed, explode!
             if (votedBadger) {
+                var scaler = 2000;
                 this.badgerVote.toFront();
                 this.badger.toFront();
-                this.badgerVote.animate({ 'r': this.canvasX }, 3000, function() {
-                    thisVoter.badgerVote.animate({ 'r': 0 }, 1000);
-                });
+                this.badgerVote.animate({
+                    'scale': [scaler, scaler, thisVoter.badgerX, thisVoter.badgerY]
+                    }, 2000, 
+                    function() {
+                        thisVoter.badgerVote.animate({
+                        'scale': [1, 1, thisVoter.badgerX, thisVoter.badgerY]
+                        }, 2000);
+                    });
             }
 
             // Vote text
@@ -181,28 +189,22 @@ console.log(message);
         'stopVotes': function() {
             var thisVoter = this;
             thisVoter.canVote = false;
-            
-            var overlay = this.r.rect(0, 0, this.canvasX, this.canvasY)
-                .attr({
-                    'fill': '#222222',
-                    'opacity': 0.95,
-                    'stroke-width': 0
-                });;
-            var text = this.r.text(this.canvasX / 2, 75, 
+            var text = this.r.text(this.canvasX - 20, 30, 
                 'You can vote again in ' + this.voteTimer + ' seconds.')
                 .attr({
                     'fill': '#EEEEEE',
-                    'font-size': 50
+                    'font-size': 20,
+                    'text-anchor': 'end'
                 });
     
-            $('.can-vote-left').html('5 secs');
+            // Countdown
             $(document).everyTime(1000, function(i) {
                 text.attr('text', 'You can vote again in ' + (thisVoter.voteTimer - i) + ' seconds.');
             }, this.voteTimer);
             
+            // Remove notices
             $(document).oneTime(this.voteTimer * 1000 + 100, function() {
                 text.remove();
-                overlay.remove();
                 thisVoter.canVote = true;
             });
         },
@@ -230,6 +232,62 @@ console.log(message);
             $(this.panda.node).click(function() {
                 thisVoter.submitVote(socket, 'panda');
             }); 
+        },
+        
+        // Draw fun circle
+        'drawExplosion': function(colorSet, centerX, centerY, r) {
+            var chunks = [];
+            var colors = this.colors[colorSet] || ['#1d8dc3','#3193c3', '#449ac3', '#58a0c3','#6ba6c3', '#1d8dc3','#3193c3', '#449ac3', '#58a0c3','#6ba6c3', '#1d8dc3','#3193c3', '#449ac3', '#58a0c3','#6ba6c3', '#1d8dc3','#3193c3', '#449ac3', '#58a0c3','#6ba6c3'];
+            var total = 0;
+            var pieces = [];
+            var angle = 0;
+            var deltaAngles = [];
+            var circleSet = this.r.set();
+            
+            // Rnadomize colors
+            colors.sort(function() {return 0.5 - Math.random()});
+            // Create random chunks
+            for (var i = 0; i < colors.length; i++) {
+                chunks[i] = Math.random();
+            }
+            
+            // Figure out proportions
+            for (var i in chunks) {
+                total += chunks[i];
+            }
+            for (var i in chunks) {
+                pieces[i] = (chunks[i] / total);
+            }
+            
+            // Compute the delta angles; the angles for each sector.
+            for (var i = 0; i < pieces.length; i++) {
+                deltaAngles[i] = pieces[i] * 2 * Math.PI;;
+            }
+            // Draw each piece
+            for (var i = 0; i < pieces.length; i += 1) {
+                var sector = this.drawSector(angle, r, centerX, centerY, deltaAngles[i], {
+                    'fill': colors[i], 
+                    'stroke-width': 0,
+                    'opacity': 0.7
+                    }, this.r);
+                circleSet.push(sector);
+                angle += deltaAngles[i];
+            }
+            return circleSet;
+        },
+        
+        'drawSector': function(angle, r, x, y, deltaAngle, displayParameters, canvas) {
+            // Drawing a path; return it so we can do things to it later on.
+            var secondX = x + r * Math.cos(-angle);
+            var secondY = y + r * Math.sin(-angle);
+            var finalAngle = angle + deltaAngle;
+            var thirdX = x + r * Math.cos(-finalAngle);
+            var thirdY = y + r * Math.sin(-finalAngle);
+
+            return canvas.path(["M", x, y, "L", secondX, secondY, "A", 
+                r, r, 0, +(finalAngle - angle > Math.PI), 0, 
+                thirdX, thirdY, "z"])
+                .attr(displayParameters);
         }
     };
 })(jQuery);
