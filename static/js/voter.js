@@ -89,9 +89,10 @@ var voter = {};
                     'ip': thisVoter.getIP(),
                     'when': new Date()
                 }
+                
+                // Sending in a vote will send back the new count.
                 socket.send(message);
                 thisVoter.isLoading();
-                thisVoter.getCounts(socket);
             }
             return false;
         },
@@ -111,23 +112,28 @@ var voter = {};
         
         // Handle incoming messages
         'handleMessage': function(message) {
+console.log(message);
             // Update vote counts
             if (typeof message.badgers != 'undefined') {
                 // Check if different
-                if (this.badgerCount != message.badgers || this.pandaCount != message.pandas) {
+                var badger = ((this.badgerCount != 0) && (this.badgerCount < message.badgers));
+                var panda = ((this.pandaCount != 0) && (this.pandaCount < message.pandas));
+                var change = (this.badgerCount != message.badgers || this.pandaCount != message.pandas);
+                
+                if (badger || panda || change) {
                     this.badgerCount = message.badgers;
                     this.pandaCount = message.pandas;
-                    this.updateCounts();
+                    this.updateCounts(badger, panda);
                 }
             }
         },
         
         // Update counts visually
-        'updateCounts': function() {
+        'updateCounts': function(votedBadger, votedPanda) {
             var thisVoter = this;
             var total = this.badgerCount + this.pandaCount;
             
-            // Scale images
+            // Scale images for both
             var pandaDim = ((this.pandaCount / total) * this.imageScaleDim) + this.imageMinDim;
             this.panda.animate({
                 'width': pandaDim,
@@ -145,10 +151,15 @@ var voter = {};
                 'y': this.badgerY - (badgerDim / 2),
                 'rotation': '360'
             }, 1000, 'elastic');
-            this.badgerVote.toBack().animate({ 'r': this.canvasX }, 3000, function() {
-                thisVoter.badgerVote.animate({ 'r': 0 }, 1000);
-            });
-            this.panda.toBack();
+            
+            // If badger pressed, explode!
+            if (votedBadger) {
+                this.badgerVote.toFront();
+                this.badger.toFront();
+                this.badgerVote.animate({ 'r': this.canvasX }, 3000, function() {
+                    thisVoter.badgerVote.animate({ 'r': 0 }, 1000);
+                });
+            }
 
             // Vote text
             this.pandaVotes.attr({
@@ -177,8 +188,8 @@ var voter = {};
                     'opacity': 0.95,
                     'stroke-width': 0
                 });;
-            var text = this.r.text(this.canvasX / 2, this.canvasY / 2, 
-                'You can vote again in \n' + this.voteTimer + ' seconds.')
+            var text = this.r.text(this.canvasX / 2, 75, 
+                'You can vote again in ' + this.voteTimer + ' seconds.')
                 .attr({
                     'fill': '#EEEEEE',
                     'font-size': 50
@@ -186,7 +197,7 @@ var voter = {};
     
             $('.can-vote-left').html('5 secs');
             $(document).everyTime(1000, function(i) {
-                text.attr('text', 'You can vote again in \n' + (thisVoter.voteTimer - i) + ' seconds.');
+                text.attr('text', 'You can vote again in ' + (thisVoter.voteTimer - i) + ' seconds.');
             }, this.voteTimer);
             
             $(document).oneTime(this.voteTimer * 1000 + 100, function() {
