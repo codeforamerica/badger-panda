@@ -29,6 +29,8 @@ var voter = {};
             },
     
         'start': function(socket) {
+            var thisVoter = this;
+        
             // Calculate some things
             this.canvasX = $(window).width();
             this.canvasY = $(window).height();
@@ -45,12 +47,30 @@ var voter = {};
                 this.badgerX - (this.imageInitialDim / 2), 
                 this.badgerY - (this.imageInitialDim / 2), 
                 this.imageInitialDim, this.imageInitialDim
-            );
+            ).click(function() {
+                thisVoter.submitVote(socket, 'badger');
+            })
+            .mouseover(function() {
+                this.attr({ 'cursor': 'pointer' });
+                this.animate({ 'rotation': '360' }, 1000);
+            })
+            .mouseout(function() {
+                this.animate({ 'rotation': '1' }, 1000);
+            });
             this.panda = this.r.image('/img/panda.svg',
                 this.pandaX - (this.imageInitialDim / 2), 
                 this.pandaY - (this.imageInitialDim / 2), 
                 this.imageInitialDim, this.imageInitialDim
-            );
+            ).click(function() {
+                thisVoter.submitVote(socket, 'panda');
+            })
+            .mouseover(function() {
+                this.attr({ 'cursor': 'pointer' });
+                this.animate({ 'rotation': '360' }, 1000);
+            })
+            .mouseout(function() {
+                this.animate({ 'rotation': '1' }, 1000);
+            });
             
             // Votes
             this.badgerVotes = this.r.text(this.badgerX, 
@@ -73,7 +93,6 @@ var voter = {};
             // Get started
             this.isLoading();
             this.getCounts(socket);
-            this.handleClicks(socket);
         },
         
         // Represent loading
@@ -120,7 +139,6 @@ var voter = {};
         
         // Handle incoming messages
         'handleMessage': function(message) {
-console.log(message);
             // Update vote counts
             if (typeof message.badgers != 'undefined') {
                 // Check if different
@@ -144,22 +162,30 @@ console.log(message);
             
             // Scale images for both
             var pandaDim = ((this.pandaCount / total) * this.imageScaleDim) + this.imageMinDim;
+            this.pandaDim = pandaDim;
             this.panda.animate({
                 'width': pandaDim,
                 'height': pandaDim,
                 'x': this.pandaX - (pandaDim / 2),
-                'y': this.pandaY - (pandaDim / 2),
-                'rotation': '360'
+                'y': this.pandaY - (pandaDim / 2)
             }, 1000, 'elastic');
             
             var badgerDim = ((this.badgerCount / total) * this.imageScaleDim) + this.imageMinDim;
+            this.badgerDim = badgerDim;
             this.badger.animate({
                 'width': badgerDim,
                 'height': badgerDim,
                 'x': this.badgerX - (badgerDim / 2),
-                'y': this.badgerY - (badgerDim / 2),
-                'rotation': '360'
+                'y': this.badgerY - (badgerDim / 2)
             }, 1000, 'elastic');
+            
+            // Add halos
+            if (this.badgerHalo) { this.badgerHalo.remove() }
+            this.badgerHalo = this.r.path(this.circlePath(this.badgerX, this.badgerY, badgerDim / 2 + 20))
+                .attr({ 'stroke-width': 0 });
+            if (this.pandaHalo) { this.pandaHalo.remove() }
+            this.pandaHalo = this.r.path(this.circlePath(this.pandaX, this.pandaY, pandaDim / 2 + 20))
+                .attr({ 'stroke-width': 0 });
             
             // If badger pressed, explode!
             if (votedBadger) {
@@ -229,29 +255,23 @@ console.log(message);
             });
         },
         
-        // Handle clicks
-        'handleClicks': function(socket) {
-            var thisVoter = this;
+        // Add some flare
+        'addFlare': function() {
+            var total = Math.floor(Math.random() * 20) + 10;
+            var flareSet = this.r.set();
+            var rMin = 10;
+            var rMax = 30;
             
-            // Handle hovers
-            $(this.badger.node).hover(function() {
-                $(this).css('cursor', 'pointer');
-            },
-            function() { });
-            $(this.panda.node).hover(function() {
-                $(this).css('cursor', 'pointer');
-            },
-            function() { });
-        
-            // Handle badger vote
-            $(this.badger.node).click(function() {
-                thisVoter.submitVote(socket, 'badger');
-            }); 
+            // Add some flares
+            for (var i = 0; i < total; i++) {
+                var x = Math.random() * this.canvasX;
+                var y = Math.random() * this.canvasY;
+                var r = (Math.random() * (rMax - rMin)) + rMin;
+                var circle = this.r.circle(x, y, r).toBack();
+                flareSet.push(circle);
+            }
             
-            // Handle panda vote
-            $(this.panda.node).click(function() {
-                thisVoter.submitVote(socket, 'panda');
-            }); 
+            this.flareSet = flareSet;
         },
         
         // Draw fun circle
@@ -308,6 +328,10 @@ console.log(message);
                 r, r, 0, +(finalAngle - angle > Math.PI), 0, 
                 thirdX, thirdY, "z"])
                 .attr(displayParameters);
+        },
+        
+        'circlePath': function(x, y, r) {
+            return "M" + x + "," + (y-r) + "A"+r+","+r+",0,1,1,"+(x-0.1)+","+(y-r)+" z"; 
         }
     };
 })(jQuery);
