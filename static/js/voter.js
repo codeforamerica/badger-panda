@@ -19,6 +19,7 @@ var voter = {};
         'imageMinDim': 150,
         'imageScaleDim': 300,
         'countColor': '#CCCCCC',
+        'safeuardHackTimer': 10000,
         'colors': {
             'badger': ['#FCE138', '#FBDB34', '#FAD531', '#F9CF2E', '#F9C92B', '#F8C328', 
                 '#F7BD25', '#F6B722', '#F6B11F', '#F5AB1B', '#F4A518', '#F39F15', '#F39912', 
@@ -30,6 +31,7 @@ var voter = {};
     
         'start': function(socket) {
             var thisVoter = this;
+            this.isLoading();
         
             // Calculate some things
             this.canvasX = $(window).width();
@@ -91,17 +93,19 @@ var voter = {};
                 .toBack();
             
             // Get started
-            this.isLoading();
+            this.safeguardHack();
             this.getCounts(socket);
         },
         
         // Represent loading
         'isLoading': function() {
+            this.loading = true;
             $('#loading').show();
         },
         
         // Handle not loading
         'doneLoading': function() {
+            this.loading = false;
             $('#loading').hide();
         },
     
@@ -272,6 +276,21 @@ var voter = {};
             }
             
             this.flareSet = flareSet;
+        },
+        
+        // SafeGuard hack.  For some reason, the socket doesn't
+        // fully connect when someone comes to the site for the
+        // first time.  So, basically, if its still loading
+        // after 3 seconds when started, then refresh.
+        'safeguardHack': function() {
+            var thisVoter = this;
+            $(document).oneTime(this.safeuardHackTimer, function() {
+                if (thisVoter.loading) {
+                    // Refresh
+                    window.location.reload(true);
+
+                }
+            });
         },
         
         // Draw fun circle
