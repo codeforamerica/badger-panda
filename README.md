@@ -12,6 +12,32 @@ Using node.js, the server sets up the following:
 This is currently deployable for dotcloud, but could be run
 in any environment that runs node.js.
 
+### Set up Database
+
+1. Install CouchDB or use a CouchDB service.
+3. Add the following design documents:
+
+  _design/badger-votes
+  "views": {
+    "badger-votes": {
+      "map": "function(doc) { if (doc.vote == 'badger') { emit(null, doc); } }"
+    }
+  }
+   
+  _design/panda-votes
+  "views": {
+    "panda-votes": {
+      "map": "function(doc) { if (doc.vote == 'panda') { emit(null, doc); } }"
+    }
+  }
+  
+  _design/validate
+  "validate_doc_update": "function (newDoc, oldDoc, user) { isAdmin = (user.roles.indexOf('_admin') != -1);  isUser = (user.roles.indexOf('user') != -1); if (!(isAdmin)) { throw({unauthorized: 'must be admin or user.'}); }  }"
+
+
+
+### Set up Web Application
+
 1. Install node
 2. Install npm
 3. Run: `npm install`
