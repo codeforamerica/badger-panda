@@ -19,7 +19,8 @@ var voter = {};
         'imageMinDim': 150,
         'imageScaleDim': 300,
         'countColor': '#CCCCCC',
-        'safeuardHackTimer': 10000,
+        'safeuardHackTimer': 15000,
+        'started': true,
         'colors': {
             'badger': ['#FCE138', '#FBDB34', '#FAD531', '#F9CF2E', '#F9C92B', '#F8C328', 
                 '#F7BD25', '#F6B722', '#F6B11F', '#F5AB1B', '#F4A518', '#F39F15', '#F39912', 
@@ -121,6 +122,7 @@ var voter = {};
     
         // Submit vote to system
         'submitVote': function(socket, vote) {
+            this.started = false;
             var thisVoter = this;
             if (this.canVote == true) {
                 thisVoter.stopVotes();
@@ -300,7 +302,7 @@ var voter = {};
         'safeguardHack': function() {
             var thisVoter = this;
             $(document).oneTime(this.safeuardHackTimer, function() {
-                if (thisVoter.loading) {
+                if (thisVoter.loading && thisVoter.started) {
                     // Refresh
                     window.location.reload(true);
 
