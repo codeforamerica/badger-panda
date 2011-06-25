@@ -2,8 +2,6 @@
  * @file
  * Client side JS
  */
- 
-/* 
 (function($) {
     $(document).ready(function() {
         // Handle sprockets
@@ -22,4 +20,3 @@
         voter.start(socket);
     });
 })(jQuery);
-*/
