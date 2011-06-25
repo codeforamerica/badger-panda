@@ -44,6 +44,14 @@ a:visited:hover {
     color: #36B3FC;
 }
 
+#message {
+    bottom: 10px;
+    position: absolute;
+    left: 20px;
+    text-align: left;
+    position: fixed;
+}
+
 #loading {
     display: none;
     top: 10px;

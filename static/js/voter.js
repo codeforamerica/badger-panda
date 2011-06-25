@@ -108,6 +108,16 @@ var voter = {};
             this.loading = false;
             $('#loading').hide();
         },
+        
+        // Handle message
+        'setMessage': function(message) {
+            $('#message').html(message);
+        },
+        
+        // Hide message
+        'hideMessage': function() {
+            $('#message').html('');
+        },
     
         // Submit vote to system
         'submitVote': function(socket, vote) {
@@ -117,7 +127,6 @@ var voter = {};
                 var message = {
                     'action': 'save-vote',
                     'vote': vote,
-                    'ip': thisVoter.getIP(),
                     'when': new Date()
                 }
                 
@@ -145,6 +154,8 @@ var voter = {};
         'handleMessage': function(message) {
             // Update vote counts
             if (typeof message.badgers != 'undefined') {
+                this.hideMessage();
+                
                 // Check if different
                 var badger = ((this.badgerCount != 0) && (this.badgerCount < message.badgers));
                 var panda = ((this.pandaCount != 0) && (this.pandaCount < message.pandas));
@@ -155,6 +166,10 @@ var voter = {};
                     this.pandaCount = message.pandas;
                     this.updateCounts(badger, panda);
                 }
+            }
+            else if (typeof message.throttled != 'undefined') {
+                this.setMessage('You have been throttled, try again later.');
+                this.doneLoading();
             }
         },
         
