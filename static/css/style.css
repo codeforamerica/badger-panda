@@ -14,12 +14,12 @@ body {
     color: #FFFFFF;
 }
 
-header {
-}
-
 h1 {
     font-size: 3em;
     margin: 10px 0;
+}
+
+header h1 {
     display: none;
 }
 
@@ -60,7 +60,33 @@ a:visited:hover {
 }
 
 #main {
-    text-align: center;
-    font-size: 3em;
+    text-align: justify;
+    font-size: 1.65em;
+    margin: 1em;
+}
+
+#main p {
+    margin-bottom: 1em;
+}
+
+#main h2 {
     margin-top: 3em;
+    margin-bottom: 1em;
+    border-top: 3px solid #999999;
+    padding-top: 1em;
+    color: #B5B5B5;
+}
+
+#main .abuse {
+    font-size: .7em;
+    color: #B5B5B5;
+}
+
+.maintenance {
+    background-color: #444444;
+    color: #EEEEEE;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    padding: 1em;
 }

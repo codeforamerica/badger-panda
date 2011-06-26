@@ -43,21 +43,36 @@
         </header>
         
         <div id="main" role="main">
+            <% if (about == true) { %>
+                <h1>About Badger v Panda</h1>
+                <p>This site was created because of a playful debate started at <a href="http://codeforamerica.org">Code for America</a> about whether our mascot should be a <a href="http://en.wikipedia.org/wiki/Badger">Badger</a> or <a href="http://en.wikipedia.org/wiki/Panda">Panda</a>.  <strong>Badger v Panda</strong> is about taking that debate outside the walls of CfA and asking the public.</p>
+                
+                <p>Above all else, this site is an experiment and educational opportunity for its main developer, <a href="http://twitter.com/zzolo">@zzolo</a>, to try out some new technologies, such as <a href="http://nodejs.org/">Node.js</a>, <a href="http://couchdb.apache.org/">CouchDB</a>, <a href="http://en.wikipedia.org/wiki/WebSockets">WebSockets</a>, <a href="http://raphaeljs.com/">Raphael.js</a>, and more.  The code is freely available on <a href="https://github.com/codeforamerica/badger-panda">GitHub</a>.</p>
+                
+                <h2>Anonymous Voting and Abuse</h2>
+                <p class="abuse">With any anonymous voting web application, there is not a real way to stop people from making as many votes as they want (actually this is very encouraged if actually going through the web site).  But when it comes to abusing the system, the only mechanism to fight it is throttling and blacklisting which, though stop a select few, ultimately decrease the value of the application for the majority.  Abuse also increases the resources needed for this application, both time and money.  So, I kindly request that people don't abuse this application as it is simply meant to be a fun learning exercise.</p>
+            <% } %>
+            
+            <% if (typeof maintenance != 'undefined' && maintenance == true) { %>
+                <p class="maintenance">Due to <strong>Badger v Panda</strong>'s unexpected popularity, this site will not be accepting votes for the time being. Come back soon for more Badger v Panda goodness.</p>
+            <% } %>
         </div>
         
         <div id="message"></div>
         
         <footer>
-            code available on <a href="https://github.com/codeforamerica/badger-panda">GitHub</a>.
+            <a href="/about">about</a> this site
         </footer>
     </div>
     
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/libs/jquery-1.6.min.js"></script>
-    <script src="/js/libs/jquery-ui.min.js"></script>
-    <script src="/js/libs/jquery.timers.js"></script>
-    <script src="/js/libs/raphael-min.js"></script>
-    <script src="/js/voter.js"></script>
-    <script src="/js/client.js"></script>
+    <% if (!about && (typeof maintenance == 'undefined' || maintenance == false)) { %>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/libs/jquery-1.6.min.js"></script>
+        <script src="/js/libs/jquery-ui.min.js"></script>
+        <script src="/js/libs/jquery.timers.js"></script>
+        <script src="/js/libs/raphael-min.js"></script>
+        <script src="/js/voter.js"></script>
+        <script src="/js/client.js"></script>
+    <% } %>
 </body>
 </html>
