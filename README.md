@@ -19,6 +19,7 @@ in any environment that runs node.js.
 3. Run: `npm install`
 4. Copy example settings and update appropriate values: cp lib/settings.example.js lib/settings.js`
 5. Run once: `node lib/db-setup.js`
+   * If you want to remove all the old votes, run: `node lib/db-setup.js --delete-votes`
 6. Start server: `node lib/server.js`
 
 ## Technologies Used
