@@ -137,7 +137,7 @@ var voter = {};
         // Display vote count
         'displayVoteCount': function() {
             this.votesLeft = (this.votesLeft < 0) ? 0 : this.votesLeft;
-            var message = 'You have ' + this.votesLeft + ' votes left.';
+            var message = 'You have ' + this.votesLeft + ' vote(s) left.';
             if (this.votesLeft == 0) {
                 message = 'No more votes for right now; come back later.';
             }
@@ -295,9 +295,11 @@ var voter = {};
             }, this.voteTimer);
             
             // Remove notices
-            $(document).oneTime(this.voteTimer * 1000 + 100, function() {
+            $(document).oneTime(this.voteTimer * 1000 + 300, function() {
+                thisVoter.messageText.attr('text', '');
                 thisVoter.displayVoteCount();
                 thisVoter.canVote = true;
+                $(this).stopTime();
             });
         },
         
@@ -323,14 +325,13 @@ var voter = {};
         // SafeGuard hack.  For some reason, the socket doesn't
         // fully connect when someone comes to the site for the
         // first time.  So, basically, if its still loading
-        // after 3 seconds when started, then refresh.
+        // after X seconds when started, then refresh.
         'safeguardHack': function() {
             var thisVoter = this;
             $(document).oneTime(this.safeuardHackTimer, function() {
                 if (thisVoter.loading && thisVoter.started) {
                     // Refresh
                     window.location.reload(true);
-
                 }
             });
         },
