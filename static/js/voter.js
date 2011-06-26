@@ -34,10 +34,14 @@ var voter = {};
         'start': function(socket) {
             var thisVoter = this;
             this.isLoading();
-        
-            // Calculate some things
+            
+            // Try to make all dimensions based on window,
+            // heigh and width this should help with mobile
+            // devices.
             this.canvasX = $(window).width();
             this.canvasY = $(window).height();
+        
+            // Calculate some things
             this.badgerX = this.canvasX * .25;
             this.badgerY = this.canvasY * .5;
             this.pandaX = this.canvasX * .75;
@@ -93,8 +97,17 @@ var voter = {};
                 .toBack();
             this.pandaVote = this.drawExplosion('panda', this.pandaX, this.pandaY, 1)
                 .toBack();
+                
+            // Message text area.
+            this.messageText = this.r.text(this.canvasX - (this.canvasX * .02), this.canvasX * .02, '')
+                .attr({
+                    'fill': '#EEEEEE',
+                    'font-size': (this.canvasX * .02),
+                    'text-anchor': 'end'
+                });
             
             // Get started
+            this.displayVoteCount();
             this.safeguardHack();
             this.getCounts(socket);
         },
@@ -120,21 +133,36 @@ var voter = {};
         'hideMessage': function() {
             $('#message').html('');
         },
+        
+        // Display vote count
+        'displayVoteCount': function() {
+            this.votesLeft = (this.votesLeft < 0) ? 0 : this.votesLeft;
+            var message = 'You have ' + this.votesLeft + ' votes left.';
+            if (this.votesLeft == 0) {
+                message = 'No more votes for right now; come back later.';
+            }
+            this.messageText.attr('text', message);
+        },
     
         // Submit vote to system
         'submitVote': function(socket, vote) {
             this.started = false;
             var thisVoter = this;
-            if (this.canVote == true) {
-                thisVoter.stopVotes();
-                var message = {
-                    'action': 'save-vote',
-                    'vote': vote,
-                    'when': new Date()
+            if (this.canVote == true && this.votesLeft > 0) {
+                // Count votes
+                thisVoter.votesLeft--;
+                thisVoter.displayVoteCount();
+                
+                // No need to delay if votes are used up
+                if (this.votesLeft > 0) {
+                    thisVoter.stopVotes();
                 }
                 
                 // Sending in a vote will send back the new count.
-                socket.send(message);
+                socket.send({
+                    'action': 'save-vote',
+                    'vote': vote
+                });
                 thisVoter.isLoading();
             }
             return false;
@@ -259,22 +287,16 @@ var voter = {};
         'stopVotes': function() {
             var thisVoter = this;
             thisVoter.canVote = false;
-            var text = this.r.text(this.canvasX - 20, 30, 
-                'You can vote again in ' + this.voteTimer + ' seconds.')
-                .attr({
-                    'fill': '#EEEEEE',
-                    'font-size': 20,
-                    'text-anchor': 'end'
-                });
-    
+            this.messageText.attr('text', 'You can vote again in ' + this.voteTimer + ' seconds.');
+            
             // Countdown
             $(document).everyTime(1000, function(i) {
-                text.attr('text', 'You can vote again in ' + (thisVoter.voteTimer - i) + ' seconds.');
+                thisVoter.messageText.attr('text', 'You can vote again in ' + (thisVoter.voteTimer - i) + ' seconds.');
             }, this.voteTimer);
             
             // Remove notices
             $(document).oneTime(this.voteTimer * 1000 + 100, function() {
-                text.remove();
+                thisVoter.displayVoteCount();
                 thisVoter.canVote = true;
             });
         },
