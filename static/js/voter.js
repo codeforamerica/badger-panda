@@ -10,6 +10,7 @@ var voter = {};
 (function($) {
     voter = {
         'canVote': true,
+        'votesLeft': 3,
         'badgerCount': 0,
         'pandaCount': 0,
         'voteTimer': 20,
@@ -200,13 +201,15 @@ var voter = {};
                 'y': this.badgerY - (badgerDim / 2)
             }, 1000, 'elastic');
             
-            // Add halos
+            // TODO: Add halos with tweets or images that float around.
+            /*
             if (this.badgerHalo) { this.badgerHalo.remove() }
             this.badgerHalo = this.r.path(this.circlePath(this.badgerX, this.badgerY, badgerDim / 2 + 20))
                 .attr({ 'stroke-width': 0 });
             if (this.pandaHalo) { this.pandaHalo.remove() }
             this.pandaHalo = this.r.path(this.circlePath(this.pandaX, this.pandaY, pandaDim / 2 + 20))
                 .attr({ 'stroke-width': 0 });
+            */
             
             // If badger pressed, explode!
             if (votedBadger) {
