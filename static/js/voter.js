@@ -9,6 +9,7 @@ var voter = {};
 // Scope jquery
 (function($) {
     voter = {
+        'isThrottled': false,
         'canVote': true,
         'votesLeft': 3,
         'badgerCount': 0,
@@ -106,8 +107,10 @@ var voter = {};
                     'text-anchor': 'end'
                 });
             
-            // Get started
-            this.displayVoteCount();
+            // Get started.  Only display count if not throttled
+            if (this.isThrottled) {
+                this.displayVoteCount();
+            }
             this.safeguardHack();
             this.getCounts(socket);
         },
@@ -136,6 +139,11 @@ var voter = {};
         
         // Display vote count
         'displayVoteCount': function() {
+            // Check for throttling
+            if (!this.isThrottled) {
+                return false;
+            }
+            
             this.votesLeft = (this.votesLeft < 0) ? 0 : this.votesLeft;
             var message = 'You have ' + this.votesLeft + ' vote(s) left.';
             if (this.votesLeft == 0) {
@@ -148,13 +156,15 @@ var voter = {};
         'submitVote': function(socket, vote) {
             this.started = false;
             var thisVoter = this;
-            if (this.canVote == true && this.votesLeft > 0) {
+            
+            // Check vote count, if throttling
+            if ((thisVoter.canVote == true && thisVoter.votesLeft > 0) || !thisVoter.isThrottled) {
                 // Count votes
                 thisVoter.votesLeft--;
                 thisVoter.displayVoteCount();
                 
                 // No need to delay if votes are used up
-                if (this.votesLeft > 0) {
+                if (thisVoter.votesLeft > 0) {
                     thisVoter.stopVotes();
                 }
                 
@@ -201,6 +211,9 @@ var voter = {};
             else if (typeof message.throttled != 'undefined') {
                 this.setMessage('You have been throttled, try again later.');
                 this.doneLoading();
+            }
+            else if (typeof message.isThrottled != 'undefined') {
+                this.isThrottled = message.isThrottled;
             }
         },
         
@@ -285,9 +298,14 @@ var voter = {};
         
         // Stop votes
         'stopVotes': function() {
+            // Check for throttling
+            if (!this.isThrottled) {
+                return false;
+            }
+        
             var thisVoter = this;
             thisVoter.canVote = false;
-            this.messageText.attr('text', 'You can vote again in ' + this.voteTimer + ' seconds.');
+            thisVoter.messageText.attr('text', 'You can vote again in ' + this.voteTimer + ' seconds.');
             
             // Countdown
             $(document).everyTime(1000, function(i) {
